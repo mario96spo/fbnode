@@ -1,0 +1,111 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6F275C97-7307-4DA4-BC8D-76F938DDFC27}|fbnode\\fbnode.csproj|c:\\users\\mario\\desktop\\fbnode\\fbnode\\fbnode\\usercontrol1.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6F275C97-7307-4DA4-BC8D-76F938DDFC27}|fbnode\\fbnode.csproj|solutionrelative:fbnode\\usercontrol1.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6F275C97-7307-4DA4-BC8D-76F938DDFC27}|fbnode\\fbnode.csproj|c:\\users\\mario\\desktop\\fbnode\\fbnode\\fbnode\\usercontrol1.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{6F275C97-7307-4DA4-BC8D-76F938DDFC27}|fbnode\\fbnode.csproj|solutionrelative:fbnode\\usercontrol1.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C99297EF-A6D9-4D3C-B4F9-EF594354C22F}|TestGUI\\TestGUI.csproj|c:\\users\\mario\\desktop\\fbnode\\fbnode\\testgui\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C99297EF-A6D9-4D3C-B4F9-EF594354C22F}|TestGUI\\TestGUI.csproj|solutionrelative:testgui\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C99297EF-A6D9-4D3C-B4F9-EF594354C22F}|TestGUI\\TestGUI.csproj|c:\\users\\mario\\desktop\\fbnode\\fbnode\\testgui\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C99297EF-A6D9-4D3C-B4F9-EF594354C22F}|TestGUI\\TestGUI.csproj|solutionrelative:testgui\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 394,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\TestGUI\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "TestGUI\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\TestGUI\\MainWindow.xaml",
+              "RelativeToolTip": "TestGUI\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-06-24T15:01:38.633Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\TestGUI\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "TestGUI\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\TestGUI\\MainWindow.xaml.cs",
+              "RelativeToolTip": "TestGUI\\MainWindow.xaml.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAAmAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-24T15:01:38.465Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UserControl1.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\fbnode\\UserControl1.xaml.cs",
+              "RelativeDocumentMoniker": "fbnode\\UserControl1.xaml.cs",
+              "ToolTip": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\fbnode\\UserControl1.xaml.cs",
+              "RelativeToolTip": "fbnode\\UserControl1.xaml.cs",
+              "ViewState": "AQIAALkAAAAAAAAAAAAowIAAAAAxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-24T14:52:40.047Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "cee6458d-7665-4152-85d6-86f6a3091bd8",
+        "Display": 1,
+        "X": 676,
+        "Y": 312,
+        "Width": 1249,
+        "Height": 482,
+        "WindowState": 2
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserControl1.xaml",
+              "DocumentMoniker": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\fbnode\\UserControl1.xaml",
+              "RelativeDocumentMoniker": "fbnode\\UserControl1.xaml",
+              "ToolTip": "C:\\Users\\mario\\Desktop\\fbnode\\fbnode\\fbnode\\UserControl1.xaml",
+              "RelativeToolTip": "fbnode\\UserControl1.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-06-24T14:52:42.604Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

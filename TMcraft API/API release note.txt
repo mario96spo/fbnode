@@ -1,0 +1,18 @@
+1.16.1400
+- support: TMcraft Node, TMcraft Shell, TMcraft Toolbar
+- Add: 
+	- class TMcraftShellAPI
+	- class TMcraftToolbarAPI
+	- interface ITMcraftToolbarEntry
+	- class ErrorStatus
+	- member: FreeBotInfo.MoveMode
+	- class MoveMode
+	- class LogExportSetting
+	- member: RobotEventType.EndButtonFreeBotChanged
+
+=================================================================
+1.14.1200
+- 1st release
+- support: TMcraft Node
+- For more detal about API functions, please check the manual: 
+	- TMcraft Node API Manual

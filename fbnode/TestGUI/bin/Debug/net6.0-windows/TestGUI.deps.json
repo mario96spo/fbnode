@@ -1,0 +1,101 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "TestGUI/1.0.0": {
+        "dependencies": {
+          "fbnode": "1.0.0"
+        },
+        "runtime": {
+          "TestGUI.dll": {}
+        }
+      },
+      "fbnode/1.0.0": {
+        "runtime": {
+          "fbnode.dll": {}
+        }
+      },
+      "TMcraft/1.16.1400.3806": {
+        "runtime": {
+          "TMcraft.dll": {
+            "assemblyVersion": "1.16.1400.3806",
+            "fileVersion": "1.16.1400.3806"
+          }
+        }
+      },
+      "Google.Protobuf/3.21.2.0": {
+        "runtime": {
+          "Google.Protobuf.dll": {
+            "assemblyVersion": "3.21.2.0",
+            "fileVersion": "3.21.2.0"
+          }
+        }
+      },
+      "Grpc.Core.Api/2.0.0.0": {
+        "runtime": {
+          "Grpc.Core.Api.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.46.3.0"
+          }
+        }
+      },
+      "Grpc.Core/2.0.0.0": {
+        "runtime": {
+          "Grpc.Core.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.46.3.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.0.0": {
+        "runtime": {
+          "Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.1.25517"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TestGUI/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "fbnode/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "TMcraft/1.16.1400.3806": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Google.Protobuf/3.21.2.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Grpc.Core.Api/2.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Grpc.Core/2.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Newtonsoft.Json/13.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

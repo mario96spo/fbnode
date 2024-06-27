@@ -1,0 +1,21 @@
+﻿<Window x:Class="fbnode.save_prompt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:fbnode"
+        mc:Ignorable="d"
+        Title="save_prompt" Height="150" Width="300">
+    <Window.Resources>
+        <local:EmptyText x:Key="EmptyText"/>
+    </Window.Resources>
+    <Grid Background="Yellow">
+        <TextBox x:Name="save_prompt_textbox" FontStyle="Italic" HorizontalAlignment="Center" Margin="0,49,0,0" Text="Type name here" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" GotFocus="save_prompt_focus" LostFocus="save_prompt_nofocus"/>
+        <TextBlock x:Name="prompt_title" HorizontalAlignment="Center" Margin="0,25,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
+            <Run Language="it-it" Text="Insert name of the recipe here:"/>
+        </TextBlock>
+        <Button x:Name="Button1" Content="Save" HorizontalAlignment="Left" Margin="69,84,0,0" VerticalAlignment="Top" Width="71" Click="Button1_Click" IsEnabled="{Binding Text, ElementName=save_prompt_textbox, Converter={StaticResource EmptyText}}"/>
+        <Button x:Name="Button2" Content="Cancel" HorizontalAlignment="Left" Margin="160,84,0,0" VerticalAlignment="Top" Width="71" Click="Button2_Click"/>
+        <Button x:Name="Button3" Content="Ok" HorizontalAlignment="Center" Margin="0,109,0,0" Visibility="Collapsed" VerticalAlignment="Top" Width="36" Click="Button3_Click"/>
+    </Grid>
+</Window>

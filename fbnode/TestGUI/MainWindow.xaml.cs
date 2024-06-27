@@ -20,7 +20,7 @@ namespace TestGUI
         public MainWindow()
         {
             InitializeComponent();
-            UserControl a = new UserControl();
+            UserControl a = new UserControl1();
             Main_Test.Children.Clear();
             Main_Test.Children.Add(a);
         }

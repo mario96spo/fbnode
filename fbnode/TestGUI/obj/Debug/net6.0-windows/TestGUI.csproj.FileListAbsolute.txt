@@ -36,3 +36,4 @@ C:\Users\mario\Desktop\fbnode\fbnode\TestGUI\obj\Debug\net6.0-windows\refint\Tes
 C:\Users\mario\Desktop\fbnode\fbnode\TestGUI\obj\Debug\net6.0-windows\TestGUI.pdb
 C:\Users\mario\Desktop\fbnode\fbnode\TestGUI\obj\Debug\net6.0-windows\TestGUI.genruntimeconfig.cache
 C:\Users\mario\Desktop\fbnode\fbnode\TestGUI\obj\Debug\net6.0-windows\ref\TestGUI.dll
+C:\Users\mario\Desktop\fbnode\fbnode\TestGUI\obj\Debug\net6.0-windows\TestGUI.sourcelink.json

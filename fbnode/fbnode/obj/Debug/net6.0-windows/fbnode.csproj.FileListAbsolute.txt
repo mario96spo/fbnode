@@ -30,3 +30,7 @@ C:\Users\mario\Desktop\fbnode\fbnode\fbnode\obj\Debug\net6.0-windows\fbnode.dll
 C:\Users\mario\Desktop\fbnode\fbnode\fbnode\obj\Debug\net6.0-windows\refint\fbnode.dll
 C:\Users\mario\Desktop\fbnode\fbnode\fbnode\obj\Debug\net6.0-windows\fbnode.pdb
 C:\Users\mario\Desktop\fbnode\fbnode\fbnode\obj\Debug\net6.0-windows\ref\fbnode.dll
+C:\Users\mario\Desktop\fbnode\fbnode\fbnode\obj\Debug\net6.0-windows\save_prompt.g.cs
+C:\Users\mario\Desktop\fbnode\fbnode\fbnode\obj\Debug\net6.0-windows\save_prompt.baml
+C:\Users\mario\Desktop\fbnode\fbnode\fbnode\obj\Debug\net6.0-windows\fbnode.sourcelink.json
+C:\Users\mario\Desktop\fbnode\fbnode\fbnode\obj\Debug\net6.0-windows\GeneratedInternalTypeHelper.g.cs

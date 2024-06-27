@@ -32,7 +32,8 @@ namespace fbnode
 
             ViewModel = new RecipesViewModel();
             DataContext = ViewModel;
-            recipe_reg = RecipeManager.LoadRecipes();
+            recipe_reg_move = RecipeManager.LoadRecipes(1);
+            recipe_reg_shake = RecipeManager.LoadRecipes(2);
         }
 
         public void InitializeNode(TMcraftNodeAPI tmnodeapi)
@@ -62,7 +63,8 @@ namespace fbnode
         bool backlighton = true;
         int[] errors = { 3, 5, 6, 7 };
         static public fbrecipe current_recipe = new fbrecipe();
-        static public List<fbrecipe> recipe_reg;
+        static public List<fbrecipe> recipe_reg_move;
+        static public List<fbrecipe> recipe_reg_shake;
         static public save_prompt save_Prompt = new save_prompt();
         static public int mode = 0;
         static public fbrecipe? selectedrecipe;
@@ -155,30 +157,6 @@ namespace fbnode
             set { SetValue(ip4Property, value); }
         }
 
-        private int saveparam(fbrecipe s_recipe, int option)
-        {
-            //option = 0: user saving attempt; 1: substitute
-            //return = 0: succesfully saved; 1: name already exists;
-
-            if (option == 0 || option == 1)
-            {
-                for (int i = 0; i < recipe_reg.Count; i++)
-                {
-                    if (recipe_reg[i].name == s_recipe.name)
-                    {
-                        if (option == 0) return 1;
-                        else if (option == 1)
-                        {
-                            recipe_reg[i] = s_recipe;
-                            return 0;
-                        }
-                    }
-                }
-                recipe_reg.Append(s_recipe);
-                return 0;
-            }
-            else return -1;
-        }
         private fbrecipe getparam(int type)
         {
             fbrecipe recipe = new fbrecipe();
@@ -255,36 +233,32 @@ namespace fbnode
             NodeUI.IOProvider.WriteDigitOutput(IO_TYPE.CONTROL_BOX, 0, 0, false);
         }
 
-        private void Test_Move_Click(object sender, RoutedEventArgs e)
+        private void Test_Click(object sender, RoutedEventArgs e)
         {
-            //saveparam();
             byte[] MySendByte = { 0, 0, 0 };
-            if (errors.Contains(Sendcmd("RXV" + SharedSpeed * 3))) return;
-            if (errors.Contains(Sendcmd("RXA" + SharedAcc * 3))) return;
-            if (errors.Contains(Sendcmd("RXB" + SharedDec * 3))) return;
-            if (errors.Contains(Sendcmd("FL" + SharedAngle * 3))) return;
-        }
-
-        private void Test_Shake_Click(object sender, RoutedEventArgs e)
-        {
-
-            //saveparam();
-            byte[] MySendByte = { 0, 0, 0 };
-
-            if (errors.Contains(Sendcmd("RXV" + SharedSpeed * 3))) return;
-            if (errors.Contains(Sendcmd("RXA" + SharedAcc * 3))) return;
-            if (errors.Contains(Sendcmd("RXB" + SharedDec * 3))) return;
-
-            while (movecount > 0)
+            if(mode == 0)
+            {
+                if (errors.Contains(Sendcmd("RXV" + SharedSpeed * 3))) return;
+                if (errors.Contains(Sendcmd("RXA" + SharedAcc * 3))) return;
+                if (errors.Contains(Sendcmd("RXB" + SharedDec * 3))) return;
+                if (errors.Contains(Sendcmd("FL" + SharedAngle * 3))) return;
+            }
+            else if(mode == 1)
             {
 
-                if (errors.Contains(Sendcmd("FL" + SharedAngle * 3))) return;
-                if (errors.Contains(Sendcmd("FL" + SharedCCWAngle * 3))) return;
-                movecount--;
+                if (errors.Contains(Sendcmd("RXV" + SharedSpeed * 3))) return;
+                if (errors.Contains(Sendcmd("RXA" + SharedAcc * 3))) return;
+                if (errors.Contains(Sendcmd("RXB" + SharedDec * 3))) return;
+
+                while (movecount > 0)
+                {
+
+                    if (errors.Contains(Sendcmd("FL" + SharedAngle * 3))) return;
+                    if (errors.Contains(Sendcmd("FL" + SharedCCWAngle * 3))) return;
+                    movecount--;
+                }
             }
         }
-
-
         public int Sendcmd(string param)
         {
             byte[] paramBytes = ConstructMessageBytes(param);
@@ -493,10 +467,14 @@ namespace fbnode
             if(selectedrecipe != null)
             {
                 SharedAngle = selectedrecipe.Value.angle;
-                SharedCCWAngle = selectedrecipe.Value.angleaux;
                 SharedSpeed = selectedrecipe.Value.speed;
                 SharedAcc = selectedrecipe.Value.acc;
                 SharedDec = selectedrecipe.Value.dec;
+                if (selectedrecipe.Value.type == 1)
+                {
+                    SharedCCWAngle = selectedrecipe.Value.angleaux;
+                    SharedCount = selectedrecipe.Value.movecount;
+                }
             }
         }
 
@@ -564,7 +542,6 @@ namespace fbnode
             if (reply.Status == IPStatus.Success) MessageBox.Show("Device found");
             else MessageBox.Show("Device not found");
         }
-
         private void default_ip(object sender, RoutedEventArgs e)
         {
             ip1 = 10;
@@ -572,6 +549,40 @@ namespace fbnode
             ip3 = 10;
             ip4 = 141;
 
+        }
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
+
+            switch (tabItem)
+            {
+                case "MOVE":
+                    mode = 0;
+                    angleccwtextblock.Visibility = Visibility.Collapsed;
+                    angleccwSlider.Visibility = Visibility.Collapsed;
+                    angleccwtextbox.Visibility = Visibility.Collapsed;
+                    counttextblock.Visibility = Visibility.Collapsed;
+                    countSlider.Visibility = Visibility.Collapsed;
+                    counttextbox.Visibility = Visibility.Collapsed;
+                    RecipeListBoxmove.Visibility = Visibility.Visible;
+                    RecipeListBoxshake.Visibility = Visibility.Collapsed;
+                    break;
+
+                case "SHAKE":
+                    mode = 1;
+                    angleccwtextblock.Visibility = Visibility.Visible;
+                    angleccwSlider.Visibility = Visibility.Visible;
+                    angleccwtextbox.Visibility = Visibility.Visible;
+                    counttextblock.Visibility = Visibility.Visible;
+                    countSlider.Visibility = Visibility.Visible;
+                    counttextbox.Visibility = Visibility.Visible;
+                    RecipeListBoxmove.Visibility = Visibility.Collapsed;
+                    RecipeListBoxshake.Visibility = Visibility.Visible;
+                    break;
+
+                default:
+                    return;
+            }
         }
     }
 

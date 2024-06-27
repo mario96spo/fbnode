@@ -9,13 +9,22 @@ namespace fbnode
         private ObservableCollection<fbrecipe> recipes;
         private fbrecipe? selectedRecipe;
 
-        public ObservableCollection<fbrecipe> Recipes
+        public ObservableCollection<fbrecipe> Recipes_move
         {
             get => recipes;
             set
             {
                 recipes = value;
-                OnPropertyChanged(nameof(Recipes));
+                OnPropertyChanged(nameof(Recipes_move));
+            }
+        }
+        public ObservableCollection<fbrecipe> Recipes_shake
+        {
+            get => recipes;
+            set
+            {
+                recipes = value;
+                OnPropertyChanged(nameof(Recipes_shake));
             }
         }
         public fbrecipe? SelectedRecipe
@@ -36,8 +45,11 @@ namespace fbnode
 
         public void LoadRecipes()
         {
-            var loadedRecipes = RecipeManager.LoadRecipes();
-            Recipes = new ObservableCollection<fbrecipe>(loadedRecipes);
+            var loadedRecipes = RecipeManager.LoadRecipes(1);
+            Recipes_move = new ObservableCollection<fbrecipe>(loadedRecipes);
+            loadedRecipes = RecipeManager.LoadRecipes(2);
+            Recipes_shake = new ObservableCollection<fbrecipe>(loadedRecipes);
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

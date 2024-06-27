@@ -40,32 +40,65 @@ namespace fbnode
 
             if (option == 0 || option == 1 || option == 2)
             {
-                for (int i = 0; i < recipe_reg.Count; i++)
+                if (recipe.type == 0)
                 {
-                    if (recipe_reg[i].name == name)
+                    for (int i = 0; i < recipe_reg_move.Count; i++)
                     {
-                        if (option == 0) return 1;
-                        else if (option == 1)
+                        if (recipe_reg_move[i].name == name)
                         {
-                            recipe.name = name;
-                            recipe_reg[i] = recipe;
+                            if (option == 0) return 1;
+                            else if (option == 1)
+                            {
+                                recipe.name = name;
+                                recipe_reg_move[i] = recipe;
 
-                            RecipeManager.SaveRecipes(recipe_reg);
-                            return 0;
-                        }
-                        else if (option == 2)
-                        {
-                            recipe_reg.RemoveAt(i);
-                            RecipeManager.SaveRecipes(recipe_reg);
-                            return 2;
+                                RecipeManager.SaveRecipes(recipe_reg_move, 1);
+                                return 0;
+                            }
+                            else if (option == 2)
+                            {
+                                recipe_reg_move.RemoveAt(i);
+                                RecipeManager.SaveRecipes(recipe_reg_move, 1);
+                                return 2;
+                            }
                         }
                     }
-                }
-                recipe.name = name;
-                recipe_reg.Add(recipe);
+                    recipe.name = name;
+                    recipe_reg_move.Add(recipe);
 
-                RecipeManager.SaveRecipes(recipe_reg);
-                return 0;
+                    RecipeManager.SaveRecipes(recipe_reg_move, 1);
+                    return 0;
+                }
+                else if (recipe.type == 1)
+                {
+                    for (int i = 0; i < recipe_reg_shake.Count; i++)
+                    {
+                        if (recipe_reg_shake[i].name == name)
+                        {
+                            if (option == 0) return 1;
+                            else if (option == 1)
+                            {
+                                recipe.name = name;
+                                recipe_reg_shake[i] = recipe;
+
+                                RecipeManager.SaveRecipes(recipe_reg_shake, 1);
+                                return 0;
+                            }
+                            else if (option == 2)
+                            {
+                                recipe_reg_shake.RemoveAt(i);
+                                RecipeManager.SaveRecipes(recipe_reg_shake, 1);
+                                return 2;
+                            }
+                        }
+                    }
+                    recipe.name = name;
+                    recipe_reg_shake.Add(recipe);
+
+                    RecipeManager.SaveRecipes(recipe_reg_shake, 1);
+                    return 0;
+                }
+                else return -1;
             }
             else return -1;
         }

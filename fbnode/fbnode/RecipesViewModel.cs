@@ -6,50 +6,62 @@ namespace fbnode
 {
     public class RecipesViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<fbrecipe> recipes;
-        private fbrecipe? selectedRecipe;
+        private ObservableCollection<fbrecipe> recipesMove;
+        private ObservableCollection<fbrecipe> recipesShake;
+        private fbrecipe? selectedRecipeMove;
+        private fbrecipe? selectedRecipeShake;
 
         public ObservableCollection<fbrecipe> Recipes_move
         {
-            get => recipes;
+            get => recipesMove;
             set
             {
-                recipes = value;
+                recipesMove = value;
                 OnPropertyChanged(nameof(Recipes_move));
             }
         }
+
         public ObservableCollection<fbrecipe> Recipes_shake
         {
-            get => recipes;
+            get => recipesShake;
             set
             {
-                recipes = value;
+                recipesShake = value;
                 OnPropertyChanged(nameof(Recipes_shake));
             }
         }
-        public fbrecipe? SelectedRecipe
+
+        public fbrecipe? SelectedRecipeMove
         {
-            get => selectedRecipe;
+            get => selectedRecipeMove;
             set
             {
-                selectedRecipe = value;
-                OnPropertyChanged(nameof(SelectedRecipe));
+                selectedRecipeMove = value;
+                OnPropertyChanged(nameof(SelectedRecipeMove));
+            }
+        }
+        public fbrecipe? SelectedRecipeShake
+        {
+            get => selectedRecipeShake;
+            set
+            {
+                selectedRecipeShake = value;
+                OnPropertyChanged(nameof(SelectedRecipeShake));
             }
         }
 
         public RecipesViewModel()
         {
             LoadRecipes();
-            
         }
 
         public void LoadRecipes()
         {
-            var loadedRecipes = RecipeManager.LoadRecipes(1);
-            Recipes_move = new ObservableCollection<fbrecipe>(loadedRecipes);
-            loadedRecipes = RecipeManager.LoadRecipes(2);
-            Recipes_shake = new ObservableCollection<fbrecipe>(loadedRecipes);
+            var loadedRecipesMove = RecipeManager.LoadRecipes(1);
+            Recipes_move = new ObservableCollection<fbrecipe>(loadedRecipesMove);
 
+            var loadedRecipesShake = RecipeManager.LoadRecipes(2);
+            Recipes_shake = new ObservableCollection<fbrecipe>(loadedRecipesShake);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

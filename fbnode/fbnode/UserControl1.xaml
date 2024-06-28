@@ -18,6 +18,8 @@
 
                 <Grid Background="#FFFFAF00" Width="788">
                     <Label Content="Flexibowl configuration: MOVE" HorizontalAlignment="Left" Margin="198,0,0,0" VerticalAlignment="Top" Height="51" Width="437" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="DarkOrange"/>
+                    <TextBlock x:Name="current_textblock" FontWeight="Bold" HorizontalAlignment="Left" Margin="503,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="&#x9;"/></TextBlock>
+                    <Button x:Name="current_x_button" Content="X" HorizontalAlignment="Left" Visibility="Collapsed" Margin="576,105,0,0" VerticalAlignment="Top" Width="22" Height="22" Click="current_x_Click" RenderTransformOrigin="-1.697,4389.275"/>
 
                     <!--<TextBox x:Name="Text_Title" HorizontalAlignment="Left" Margin="47,95,0,0" TextWrapping="Wrap" Text="Type your text here" VerticalAlignment="Top" Width="115" Height="24"/>-->
 
@@ -26,7 +28,9 @@
             </TabItem>
             <TabItem Header="SHAKE" Margin="83,28,-83,-28">
                 <Grid Background="CadetBlue">
-                    <Label Content="Flexibowl configuration: SHAKE" HorizontalAlignment="Left" Margin="201,0,0,0" VerticalAlignment="Top" Height="51" Width="437" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightBlue"/>
+                    <Label Content="Flexibowl configuration: SHAKE" HorizontalAlignment="Left" Margin="201,0,0,0" VerticalAlignment="Top" Height="51" Width="437" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#487B9E"/>
+                    <TextBlock x:Name="current_textblock_2" FontWeight="Bold" HorizontalAlignment="Left" Margin="503,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="&#x9;"/></TextBlock>
+                    <Button x:Name="current_x_button_2" Content="X" HorizontalAlignment="Left" Visibility="Visible" Margin="576,105,0,0" VerticalAlignment="Top" Width="22" Height="22" Click="current_x_Click_2" RenderTransformOrigin="-1.697,4389.275"/>
                     <!--Button x:Name="Test_Shake" Content="Test" Click="Test_Shake_Click" HorizontalAlignment="Left" Margin="162,319,0,0" VerticalAlignment="Top" Height="51" Width="92"/>
                     
                     <Slider x:Name="anglecwSlider"  HorizontalAlignment="Left" Margin="238,209,0,0" VerticalAlignment="Top" Width="200" Minimum="-360" Maximum="360" Value="{Binding SharedAngle, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
@@ -50,42 +54,91 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <TextBox HorizontalAlignment="Left" Grid.Column="2" Margin="236,95,0,0" TextWrapping="Wrap" FontSize="20" HorizontalContentAlignment="Right" VerticalAlignment="Top" Width="39" Height="31" Text="{Binding ip1, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBox HorizontalAlignment="Left" Grid.Column="2" Margin="288,95,0,0" TextWrapping="Wrap" FontSize="20" HorizontalContentAlignment="Right" VerticalAlignment="Top" Width="38" Height="32" Text="{Binding ip2, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBox HorizontalAlignment="Left" Grid.Column="2" Margin="339,95,0,0" TextWrapping="Wrap" FontSize="20" HorizontalContentAlignment="Right" VerticalAlignment="Top" Width="40" Height="31" Text="{Binding ip3, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBox HorizontalAlignment="Left" Grid.Column="2" Margin="392,95,0,0" TextWrapping="Wrap" FontSize="20" HorizontalContentAlignment="Right" VerticalAlignment="Top" Width="39" Height="31" Text="{Binding ip4, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Button x:Name="save_button" Grid.Column="2" Content="Save Recipe" HorizontalAlignment="Left" Margin="346,335,0,0" VerticalAlignment="Top" Height="34" Width="92" Click="save_button_Click"/>
-        <Button x:Name="Test_Move" Grid.Column="2" Content="Test" HorizontalAlignment="Left" Margin="244,335,0,0" VerticalAlignment="Top" Height="34" Width="92" Click="Test_Click"/>
-        <CheckBox Grid.Column="2" Content="Light" HorizontalAlignment="Left" Margin="511,75,0,0" VerticalAlignment="Top" Checked="Light_Checked" Unchecked="Light_unChecked"/>
-        <CheckBox Grid.Column="2" Content="DO1" HorizontalAlignment="Left" Margin="511,95,0,0" VerticalAlignment="Top" Checked="DO1_Checked" Unchecked="DO1_unChecked"/>
-        <Slider x:Name="angleSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="238,256,0,0" VerticalAlignment="Top" Width="200" Minimum="-360" Maximum="360" Value="{Binding SharedAngle, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
-        <TextBox Grid.Column="2" HorizontalAlignment="Left" Margin="460,256,0,0" TextWrapping="Wrap"  Text="{Binding ElementName=angleSlider, Path=Value, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
-        <Slider x:Name="speedSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="238,225,0,0" VerticalAlignment="Top" Width="200" Minimum="0" Maximum="500" Value="{Binding SharedSpeed, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
-        <TextBox Grid.Column="2" HorizontalAlignment="Left" Margin="460,225,0,0" TextWrapping="Wrap"  Text="{Binding Value, ElementName=speedSlider, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="191,255,0,0" TextWrapping="Wrap" Text="Angle:" VerticalAlignment="Top"/>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="191,224,0,0" TextWrapping="Wrap" Text="Speed:" VerticalAlignment="Top"/>
-        <Slider x:Name="decSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="238,193,0,0" VerticalAlignment="Top" Width="200" Minimum="0" Maximum="250" Value="{Binding SharedDec, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
-        <TextBox Grid.Column="2" HorizontalAlignment="Left" Margin="460,193,0,0" TextWrapping="Wrap"  Text="{Binding Value, ElementName=decSlider, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="157,192,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Deceleration:"/></TextBlock>
-        <Slider x:Name="accSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="238,161,0,0" VerticalAlignment="Top" Width="200" Minimum="0" Maximum="250" Value="{Binding SharedAcc, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
-        <TextBox Grid.Column="2" HorizontalAlignment="Left" Margin="460,161,0,0" TextWrapping="Wrap"  Text="{Binding Value, ElementName=accSlider, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
-        <TextBlock x:Name="counttextblock" Grid.Column="2" HorizontalAlignment="Left" Margin="190,311,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="Count:"/></TextBlock>
-        <Slider x:Name="countSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="238,313,0,0" VerticalAlignment="Top" Width="200" Minimum="1" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding SharedCount, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
-        <Slider x:Name="angleccwSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="238,285,0,0" VerticalAlignment="Top" Width="200" Minimum="-360" Maximum="360" Value="{Binding SharedCCWAngle, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
-        <TextBox x:Name="angleccwtextbox" Grid.Column="2" HorizontalAlignment="Left" Margin="460,285,0,0" TextWrapping="Wrap"  Text="{Binding ElementName=angleccwSlider, Path=Value, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
-        <TextBox x:Name="counttextbox" Grid.Column="2" HorizontalAlignment="Left" Margin="460,313,0,0" TextWrapping="Wrap"  Text="{Binding Value, ElementName=countSlider, Mode=TwoWay, StringFormat=\{0:0\}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
-        <TextBlock x:Name="angleccwtextblock" Grid.Column="2" HorizontalAlignment="Left" Margin="162,283,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="CCW "/><Run Text="Angle:"/></TextBlock>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="158,160,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Acceleration"/><Run Language="it-it" Text=":"/></TextBlock>
-        <Button Grid.Column="2" Content="vision job" FontSize="13" HorizontalAlignment="Left" Margin="244,381,0,0" VerticalAlignment="Top" Height="34" Width="92" Click="Button_Click"/>
-        <Button x:Name="append_button" Grid.Column="2" Content="Append Script" HorizontalAlignment="Left" Margin="346,381,0,0" VerticalAlignment="Top" Click="append_button_Click" Width="92" Height="34"/>
-        <ListBox x:Name="RecipeListBoxmove"  Grid.Column="2" Margin="10,81,645,135" ItemsSource="{Binding Recipes_move}" DisplayMemberPath="name" SelectedItem="{Binding SelectedRecipe, Mode=TwoWay}" SelectionChanged="ListBox_SelectionChanged"/>
-        <ListBox x:Name="RecipeListBoxshake"  Grid.Column="2" Margin="10,81,645,135" ItemsSource="{Binding Recipes_shake}" DisplayMemberPath="name" SelectedItem="{Binding SelectedRecipe, Mode=TwoWay}" SelectionChanged="ListBox_SelectionChanged"/>
+        <TextBox HorizontalAlignment="Center" Grid.Column="2" Margin="0,79,0,0" TextWrapping="Wrap" FontSize="20" HorizontalContentAlignment="Right" VerticalAlignment="Top" Width="39" Height="31" Text="{Binding ip1, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox HorizontalAlignment="Left" Grid.Column="2" Margin="401,79,0,0" TextWrapping="Wrap" FontSize="20" HorizontalContentAlignment="Right" VerticalAlignment="Top" Width="38" Height="32" Text="{Binding ip2, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox HorizontalAlignment="Left" Grid.Column="2" Margin="452,79,0,0" TextWrapping="Wrap" FontSize="20" HorizontalContentAlignment="Right" VerticalAlignment="Top" Width="40" Height="31" Text="{Binding ip3, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox HorizontalAlignment="Left" Grid.Column="2" Margin="505,79,0,0" TextWrapping="Wrap" FontSize="20" HorizontalContentAlignment="Right" VerticalAlignment="Top" Width="39" Height="31" Text="{Binding ip4, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <Button x:Name="save_button" Grid.Column="2" Content="Save to New" HorizontalAlignment="Left" Margin="389,324,0,0" VerticalAlignment="Top" Height="34" Width="92" Click="save_button_Click"/>
+        <Button x:Name="save_to_current_button" Grid.Column="2" Content="Save to Current" HorizontalAlignment="Left" Margin="491,324,0,0" VerticalAlignment="Top" Height="34" Width="92" Click="save_to_current_Click"/>
+        <Button x:Name="Test_Move" Grid.Column="2" Content="Test" HorizontalAlignment="Left" Margin="287,324,0,0" VerticalAlignment="Top" Height="34" Width="92" Click="Test_Click"/>
+        <CheckBox Grid.Column="2" Content="Light" HorizontalAlignment="Left" Margin="215,324,0,0" VerticalAlignment="Top" Checked="Light_Checked" Unchecked="Light_unChecked"/>
+        <CheckBox Grid.Column="2" Content="DO1" HorizontalAlignment="Left" Margin="215,344,0,0" VerticalAlignment="Top" Checked="DO1_Checked" Unchecked="DO1_unChecked"/>
+        <Slider x:Name="angleSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="351,240,0,0" VerticalAlignment="Top" Width="200" Minimum="-360" Maximum="360" Value="{Binding SharedAngle, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
+        <TextBox Grid.Column="2" HorizontalAlignment="Left" Margin="573,240,0,0" TextWrapping="Wrap"  Text="{Binding ElementName=angleSlider, Path=Value, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
+        <Slider x:Name="speedSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="351,209,0,0" VerticalAlignment="Top" Width="200" Minimum="0" Maximum="500" Value="{Binding SharedSpeed, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
+        <TextBox Grid.Column="2" HorizontalAlignment="Left" Margin="573,209,0,0" TextWrapping="Wrap"  Text="{Binding Value, ElementName=speedSlider, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
+        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="304,239,0,0" TextWrapping="Wrap" Text="Angle:" VerticalAlignment="Top"/>
+        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="304,208,0,0" TextWrapping="Wrap" Text="Speed:" VerticalAlignment="Top"/>
+        <Slider x:Name="decSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="351,177,0,0" VerticalAlignment="Top" Width="200" Minimum="0" Maximum="250" Value="{Binding SharedDec, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
+        <TextBox Grid.Column="2" HorizontalAlignment="Left" Margin="573,177,0,0" TextWrapping="Wrap"  Text="{Binding Value, ElementName=decSlider, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
+        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="270,176,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Deceleration:"/></TextBlock>
+        <Slider x:Name="accSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="351,145,0,0" VerticalAlignment="Top" Width="200" Minimum="0" Maximum="250" Value="{Binding SharedAcc, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
+        <TextBox Grid.Column="2" HorizontalAlignment="Left" Margin="573,145,0,0" TextWrapping="Wrap"  Text="{Binding Value, ElementName=accSlider, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
+        <TextBlock x:Name="counttextblock" Grid.Column="2" HorizontalAlignment="Left" Margin="303,295,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="Count:"/></TextBlock>
+        <Slider x:Name="countSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="351,297,0,0" VerticalAlignment="Top" Width="200" Minimum="1" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding SharedCount, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
+        <Slider x:Name="angleccwSlider" Grid.Column="2" HorizontalAlignment="Left" Margin="351,269,0,0" VerticalAlignment="Top" Width="200" Minimum="-360" Maximum="360" Value="{Binding SharedCCWAngle, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"/>
+        <TextBox x:Name="angleccwtextbox" Grid.Column="2" HorizontalAlignment="Left" Margin="573,269,0,0" TextWrapping="Wrap"  Text="{Binding ElementName=angleccwSlider, Path=Value, Mode=TwoWay, StringFormat={}{0:0}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
+        <TextBox x:Name="counttextbox" Grid.Column="2" HorizontalAlignment="Left" Margin="573,297,0,0" TextWrapping="Wrap"  Text="{Binding Value, ElementName=countSlider, Mode=TwoWay, StringFormat=\{0:0\}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="48" Height="18"/>
+        <TextBlock x:Name="angleccwtextblock" Grid.Column="2" HorizontalAlignment="Left" Margin="275,267,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="CCW "/><Run Text="Angle:"/></TextBlock>
+        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="271,144,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Acceleration"/><Run Language="it-it" Text=":"/></TextBlock>
+        <Button Grid.Column="2" Content="vision job" FontSize="13" HorizontalAlignment="Left" Margin="287,370,0,0" VerticalAlignment="Top" Height="34" Width="92" Click="Button_Click"/>
+        <Button x:Name="append_button" Grid.Column="2" Content="Append Script" HorizontalAlignment="Left" Margin="389,370,0,0" VerticalAlignment="Top" Click="append_button_Click" Width="92" Height="34"/>
+        <TextBlock x:Name="recipelisttextblock_shake" HorizontalAlignment="Left" Margin="11,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.ColumnSpan="3" Background="LightBlue" Height="20" Width="258"><Run Text="Name " FontWeight="Bold"/><Run Text="[acc; dec; speed; angle; ccwangle; count]"/></TextBlock>
+        <ListBox x:Name="RecipeListBoxshake"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,103,0,0" Width="260" Height="212"
+         ItemsSource="{Binding Recipes_shake}" 
+         SelectedItem="{Binding SelectedRecipeShake, Mode=TwoWay}" 
+         SelectionChanged="ListBox_SelectionChanged" Grid.ColumnSpan="3">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding name}" FontWeight="Bold" />
+                        <TextBlock Text="   [" />
+                        <TextBlock Text="{Binding acc}" />
+                        <TextBlock Text="; " />
+                        <TextBlock Text="{Binding dec}" />
+                        <TextBlock Text="; " />
+                        <TextBlock Text="{Binding speed}" />
+                        <TextBlock Text="; " />
+                        <TextBlock Text="{Binding angle}" />
+                        <TextBlock Text="; " />
+                        <TextBlock Text="{Binding angleaux}" />
+                        <TextBlock Text="; " />
+                        <TextBlock Text="{Binding movecount}" />
+                        <TextBlock Text="]" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <TextBlock x:Name="recipelisttextblock_move" HorizontalAlignment="Left" Margin="11,83,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Grid.ColumnSpan="3" Background="#FFE776" Height="20" Width="258"><Run Language="it-it" Text="Name" FontWeight="Bold"/><Run Language="it-it" Text="   [acc; dec; speed; angle]"/></TextBlock>
+        <ListBox x:Name="RecipeListBoxmove" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,103,0,0" Width="260" Height="212"
+                 ItemsSource="{Binding Recipes_move}" 
+                 SelectedItem="{Binding SelectedRecipeMove, Mode=TwoWay}" 
+                 SelectionChanged="ListBox_SelectionChanged" Grid.ColumnSpan="3">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding name}" FontWeight="Bold" />
+                        <TextBlock Text="   [" />
+                        <TextBlock Text="{Binding acc}" />
+                        <TextBlock Text="; " />
+                        <TextBlock Text="{Binding dec}" />
+                        <TextBlock Text="; " />
+                        <TextBlock Text="{Binding speed}" />
+                        <TextBlock Text="; " />
+                        <TextBlock Text="{Binding angle}" />
+                        <TextBlock Text="]" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="14,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="19" Width="71"><Run Language="it-it" Text="RECIPES LIST"/></TextBlock>
         <Button Grid.Column="2" Content="Load" HorizontalAlignment="Left" Margin="60,324,0,0" VerticalAlignment="Top" Click="Load_click"/>
-        <Button Grid.Column="2" Content="Delete" HorizontalAlignment="Left" Margin="10,324,0,0" VerticalAlignment="Top" Click="Delete_click"/>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="170,103,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="Ip address:"/></TextBlock>
-        <Button Grid.Column="2" Content="Find" HorizontalAlignment="Left" Margin="456,92,0,0" VerticalAlignment="Top" Click="ping_click"/>
-        <Button Grid.Column="2" Content="default ip address" HorizontalAlignment="Left" Margin="447,125,0,0" VerticalAlignment="Top" Click="default_ip" Width="102"/>
+        <Button x:Name="delete_button" Grid.Column="2" Content="Delete" HorizontalAlignment="Left" Margin="10,324,0,0" VerticalAlignment="Top" Click="Delete_click"/>
+        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="283,86,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="Ip address:"/></TextBlock>
+        <Button Grid.Column="2" Content="Find" HorizontalAlignment="Left" Margin="555,81,0,0" VerticalAlignment="Top" Click="ping_click" Height="27" Width="28"/>
+        <Button Grid.Column="2" Content="default ip address" HorizontalAlignment="Left" Margin="588,81,0,0" VerticalAlignment="Top" Click="default_ip" Width="105" Height="27"/>
+        <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="383,124,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="it-it" Text="Current:"/></TextBlock>
 
     </Grid>
 </UserControl>

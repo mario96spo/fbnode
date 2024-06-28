@@ -66,13 +66,14 @@ namespace fbnode
         static public List<fbrecipe> recipe_reg_move;
         static public List<fbrecipe> recipe_reg_shake;
         static public save_prompt save_Prompt = new save_prompt();
-        static public int mode = 0;
-        static public fbrecipe? selectedrecipe;
+        static public int mode = 0; //mode= 0: move tab; 1: shake tab
+        static public fbrecipe? selectedrecipeMove;
+        static public fbrecipe? selectedrecipeShake;
         static public List<VariableInfo>? global_variables;
 
         public struct fbrecipe
         {
-            //type = 0: move
+            //type = 0: move; 1:shake
             public string name { get; set; }
             public int type { get; set; }
             public int movecount { get; set; }
@@ -157,25 +158,31 @@ namespace fbnode
             set { SetValue(ip4Property, value); }
         }
 
-        private fbrecipe getparam(int type)
+        private fbrecipe getparam()
         {
             fbrecipe recipe = new fbrecipe();
-            if(type == 0)
+
+            recipe.angle = (int)angleSlider.Value;
+            recipe.speed = (int)speedSlider.Value;
+            recipe.acc = (int)accSlider.Value;
+            recipe.dec = (int)decSlider.Value;
+            if (mode == 0)
             {
                 recipe.type = 0;
                 recipe.movecount = 1;
-                recipe.angle = (int)angleSlider.Value;
                 recipe.angleaux = 0;
-                recipe.speed = (int)speedSlider.Value;
-                recipe.acc = (int)accSlider.Value;
-                recipe.dec = (int)decSlider.Value;
+            }
+            else if (mode == 1)
+            {
+                recipe.type = 1;
+                recipe.movecount = (int)countSlider.Value;
+                recipe.angleaux = (int)angleccwSlider.Value;
             }
             return recipe;
         }
         private void save_button_Click(object sender, RoutedEventArgs e)
         {
-            current_recipe = getparam(0);
-            mode = 0;
+            current_recipe = getparam();
             save_Prompt.Show();
             
             ////////////// CREATE FLEXIBOWL VARIABLES IN TMFLOW /////////////////
@@ -249,6 +256,8 @@ namespace fbnode
                 if (errors.Contains(Sendcmd("RXV" + SharedSpeed * 3))) return;
                 if (errors.Contains(Sendcmd("RXA" + SharedAcc * 3))) return;
                 if (errors.Contains(Sendcmd("RXB" + SharedDec * 3))) return;
+                
+                movecount = SharedCount;
 
                 while (movecount > 0)
                 {
@@ -458,34 +467,58 @@ namespace fbnode
         {
             if (e.AddedItems.Count > 0)
             {
-                selectedrecipe = (fbrecipe)e.AddedItems[0];
+                if (mode == 0) selectedrecipeMove = (fbrecipe)e.AddedItems[0];
+                else if (mode == 1) selectedrecipeShake = (fbrecipe)e.AddedItems[0];
+                Load_click(sender, e);
             }
         }
 
         private void Load_click(object sender, RoutedEventArgs e)
         {
-            if(selectedrecipe != null)
+            save_to_current_button.IsEnabled = true;
+            save_to_current_button.Opacity = 1;
+            if (mode == 0 && selectedrecipeMove != null)
             {
-                SharedAngle = selectedrecipe.Value.angle;
-                SharedSpeed = selectedrecipe.Value.speed;
-                SharedAcc = selectedrecipe.Value.acc;
-                SharedDec = selectedrecipe.Value.dec;
-                if (selectedrecipe.Value.type == 1)
-                {
-                    SharedCCWAngle = selectedrecipe.Value.angleaux;
-                    SharedCount = selectedrecipe.Value.movecount;
-                }
+                current_recipe.name = selectedrecipeMove.Value.name;
+                current_textblock.Text = selectedrecipeMove.Value.name;
+                current_textblock.Visibility = Visibility.Visible;
+                current_x_button.Visibility = Visibility.Visible;
+
+                SharedAngle = selectedrecipeMove.Value.angle;
+                SharedSpeed = selectedrecipeMove.Value.speed;
+                SharedAcc = selectedrecipeMove.Value.acc;
+                SharedDec = selectedrecipeMove.Value.dec;
             }
+            else if (mode == 1 && selectedrecipeShake != null)
+            {
+                current_recipe.name = selectedrecipeShake.Value.name;
+                current_textblock_2.Text = selectedrecipeShake.Value.name;
+                current_textblock_2.Visibility = Visibility.Visible;
+                current_x_button_2.Visibility = Visibility.Visible;
+
+                SharedAngle = selectedrecipeShake.Value.angle;
+                SharedSpeed = selectedrecipeShake.Value.speed;
+                SharedAcc = selectedrecipeShake.Value.acc;
+                SharedDec = selectedrecipeShake.Value.dec;
+                SharedCCWAngle = selectedrecipeShake.Value.angleaux;
+                SharedCount = selectedrecipeShake.Value.movecount;
+            }
+            else MessageBox.Show("no recipe selected");
         }
 
         private void Delete_click(object sender, RoutedEventArgs e)
         {
-            if (selectedrecipe != null)
+            if (mode == 0 && selectedrecipeMove != null)
             {
                 save_Prompt.Show();
-                save_Prompt.delete(selectedrecipe.Value);
+                save_Prompt.delete(selectedrecipeMove.Value);
             }
-            else MessageBox.Show("No recipe selected");
+            else if (mode == 1 && selectedrecipeShake != null)
+            {
+                save_Prompt.Show();
+                save_Prompt.delete(selectedrecipeShake.Value);
+            }
+            else MessageBox.Show("no recipe selected");
         }
         private static void OnIp1PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -552,12 +585,21 @@ namespace fbnode
         }
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            SharedAcc = 0;
+            SharedDec = 0;
+            SharedSpeed = 0;
+            SharedAngle = 0;
+            SharedCCWAngle = 0;
+            SharedCount = 0;
+
             string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
 
             switch (tabItem)
             {
                 case "MOVE":
                     mode = 0;
+                    current_x_hide();
+                    current_x_button.Visibility = Visibility.Collapsed;
                     angleccwtextblock.Visibility = Visibility.Collapsed;
                     angleccwSlider.Visibility = Visibility.Collapsed;
                     angleccwtextbox.Visibility = Visibility.Collapsed;
@@ -566,10 +608,14 @@ namespace fbnode
                     counttextbox.Visibility = Visibility.Collapsed;
                     RecipeListBoxmove.Visibility = Visibility.Visible;
                     RecipeListBoxshake.Visibility = Visibility.Collapsed;
+                    recipelisttextblock_move.Visibility = Visibility.Visible;
+                    recipelisttextblock_shake.Visibility = Visibility.Collapsed;
                     break;
 
                 case "SHAKE":
                     mode = 1;
+                    current_x_button_2.Visibility = Visibility.Collapsed;
+                    current_x_hide_2();
                     angleccwtextblock.Visibility = Visibility.Visible;
                     angleccwSlider.Visibility = Visibility.Visible;
                     angleccwtextbox.Visibility = Visibility.Visible;
@@ -578,11 +624,50 @@ namespace fbnode
                     counttextbox.Visibility = Visibility.Visible;
                     RecipeListBoxmove.Visibility = Visibility.Collapsed;
                     RecipeListBoxshake.Visibility = Visibility.Visible;
+                    recipelisttextblock_move.Visibility= Visibility.Collapsed;
+                    recipelisttextblock_shake.Visibility= Visibility.Visible;
                     break;
 
                 default:
                     return;
             }
+        }
+
+        private void save_to_current_Click(object sender, RoutedEventArgs e)
+        {
+            current_recipe = getparam();
+            if (mode == 0) current_recipe.name = current_textblock.Text;
+            else if (mode == 1) current_recipe.name = current_textblock_2.Text;
+            save_Prompt.save_reg(current_recipe, 1);
+            ViewModel.LoadRecipes();
+        }
+
+        public void current_x_Click(object sender, RoutedEventArgs e)
+        {
+            current_x_hide();
+            selectedrecipeMove = null;
+        }
+        public void current_x_hide()
+        {
+            current_textblock.Visibility = Visibility.Collapsed;
+            current_x_button.Visibility = Visibility.Collapsed;
+            current_textblock.Text = "";
+            save_to_current_button.IsEnabled = false;
+            save_to_current_button.Opacity = 0.5;
+        }
+
+        public void current_x_Click_2(object sender, RoutedEventArgs e)
+        {
+            current_x_hide_2();
+            selectedrecipeShake = null;
+        }
+        public void current_x_hide_2()
+        {
+            current_textblock_2.Visibility = Visibility.Collapsed;
+            current_x_button_2.Visibility = Visibility.Collapsed;
+            current_textblock_2.Text = "";
+            save_to_current_button.IsEnabled = false;
+            save_to_current_button.Opacity = 0.5;
         }
     }
 

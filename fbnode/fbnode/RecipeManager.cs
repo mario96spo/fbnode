@@ -37,7 +37,7 @@ namespace fbnode
             {
                 try
                 {
-                    if (File.Exists(filePath_1))
+                    if (File.Exists(filePath_2))
                     {
                         string json = File.ReadAllText(filePath_2);
                         return JsonSerializer.Deserialize<List<fbrecipe>>(json);

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("fbnode")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4ebb3c50064fb6fa21f61e4c8f77d952cb550bf7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f821cba5cc51e248b544c236ad98bc540efe26c5")]
 [assembly: System.Reflection.AssemblyProductAttribute("fbnode")]
 [assembly: System.Reflection.AssemblyTitleAttribute("fbnode")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

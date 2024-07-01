@@ -70,6 +70,8 @@ namespace fbnode
         static public fbrecipe? selectedrecipeMove;
         static public fbrecipe? selectedrecipeShake;
         static public List<VariableInfo>? global_variables;
+        static public IPAddress ipaddress = IPAddress.Parse("10.10.10.141");
+        static public int port = 7776;
 
         public struct fbrecipe
         {
@@ -316,7 +318,7 @@ namespace fbnode
                         }
                         else if (response == "%")
                         {
-                            if (param.Substring(0, 2) == "FL")
+                            /*if (param.Substring(0, 2) == "FL")
                             {
                                 while (response != "SC=0001")
                                 {
@@ -324,7 +326,7 @@ namespace fbnode
                                     bytesRead = sender.Receive(responseBuffer);
                                     response = Encoding.ASCII.GetString(responseBuffer, 2, bytesRead - 3);
                                 }
-                            }
+                            }*/
                             command = 0;
                             return 1;
                         }
@@ -440,26 +442,27 @@ namespace fbnode
         {
 
             string[] cmd = { "\"RXV" + speed * 3 + "\"", "\"RXA" + acc * 3 + "\"", "\"RXB" + dec * 3 + "\"", "\"FL" + angle * 3 + "\"" };
-            _TMscript = "string cmd = " + cmd[0] + "\n" +
-                        "byte[] cmd_byte = String_ToByte(cmd)" + "\n" +
-                        "byte[] msg = {0, 7, 13}" + "\n" +
-                        "msg = Array_Insert(msg, 2, cmd_byte)" + "\n" +
-                        "socket_send(\"ntd_flexibowl\", msg)" + "\n" +
+            _TMscript = "Socket ntd_fb = \"" + ipaddress.ToString() + "\", " + port + "\n" +
+                        "string cmd = " + cmd[0] + "\n" +
+                        "byte[] cmd_byte = String_ToByte(cmd)\n" +
+                        "byte[] msg = {0, 7, 13}\n" +
+                        "msg = Array_Insert(msg, 2, cmd_byte)\n" +
+                        "socket_send(\"ntd_fb\", msg)\n" +
                         "cmd = " + cmd[1] + "\n" +
-                        "cmd_byte = String_ToByte(cmd)" + "\n" +
-                        "msg = {0, 7, 13}" + "\n" +
-                        "msg = Array_Insert(msg, 2, cmd_byte)" + "\n" +
-                        "socket_send(\"ntd_flexibowl\", msg)" + "\n" +
+                        "cmd_byte = String_ToByte(cmd)\n" +
+                        "msg = {0, 7, 13}\n" +
+                        "msg = Array_Insert(msg, 2, cmd_byte)\n" +
+                        "socket_send(\"ntd_fb\", msg)\n" +
                         "cmd = " + cmd[2] + "\n" +
-                        "cmd_byte = String_ToByte(cmd)" + "\n" +
-                        "msg = {0, 7, 13}" + "\n" +
-                        "msg = Array_Insert(msg, 2, cmd_byte)" + "\n" +
-                        "socket_send(\"ntd_flexibowl\", msg)" + "\n" +
+                        "cmd_byte = String_ToByte(cmd)\n" +
+                        "msg = {0, 7, 13}\n" +
+                        "msg = Array_Insert(msg, 2, cmd_byte)\n" +
+                        "socket_send(\"ntd_fb\", msg)\n" +
                         "cmd = " + cmd[3] + "\n" +
-                        "cmd_byte = String_ToByte(cmd)" + "\n" +
-                        "msg = {0, 7, 13}" + "\n" +
-                        "msg = Array_Insert(msg, 2, cmd_byte)" + "\n" +
-                        "socket_send(\"ntd_flexibowl\", msg)";
+                        "cmd_byte = String_ToByte(cmd)\n" +
+                        "msg = {0, 7, 13}\n" +
+                        "msg = Array_Insert(msg, 2, cmd_byte)\n" +
+                        "socket_send(\"ntd_fb\", msg)";
             ScriptWriteProvider scriptWriter = new ScriptWriteProvider();
             scriptWriter.AppendScript(_TMscript);
         }
@@ -669,6 +672,7 @@ namespace fbnode
             save_to_current_button.IsEnabled = false;
             save_to_current_button.Opacity = 0.5;
         }
+
     }
 
 }

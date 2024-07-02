@@ -3,81 +3,74 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Xml.Linq;
 using static fbnode.UserControl1;
 
 namespace fbnode
 {
     public static class RecipeManager
     {
-        private static readonly string fileName_1 = "recipe_reg_move.json";
-        private static readonly string filePath_1 = Path.Combine(Environment.CurrentDirectory, fileName_1);
-        private static readonly string fileName_2 = "recipe_reg_shake.json";
-        private static readonly string filePath_2 = Path.Combine(Environment.CurrentDirectory, fileName_2);
-
-        public static List<fbrecipe> LoadRecipes(int option)
+        public static void LoadReg()
         {
-            //option= 1: move register; 2: shake register
-            if (option == 1)
+            recipe_reg.Clear();
+            var files = Directory.GetFiles(recipesFolderPath, "*.json");
+
+            foreach (var file in files)
             {
                 try
                 {
-                    if (File.Exists(filePath_1))
+                    string json = File.ReadAllText(file);
+                    List<fbcommand> commands = JsonSerializer.Deserialize<List<fbcommand>>(json);
+                    if (commands != null)
                     {
-                        string json = File.ReadAllText(filePath_1);
-                        return JsonSerializer.Deserialize<List<fbrecipe>>(json);
+                        Recipe recipe = new Recipe
+                        {
+                            Name = Path.GetFileNameWithoutExtension(file),
+                            Commands = commands
+                        };
+                        recipe_reg.Add(recipe);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to load recipes: {ex.Message}");
+                    MessageBox.Show($"Error loading recipe from file {file}: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                return new List<fbrecipe>();
             }
-            else if (option == 2)
+        }
+        public static Recipe LoadRecipe(string name)
+        {
+            try
             {
-                try
+                if (save_Prompt.FileExists(name))
                 {
-                    if (File.Exists(filePath_2))
-                    {
-                        string json = File.ReadAllText(filePath_2);
-                        return JsonSerializer.Deserialize<List<fbrecipe>>(json);
-                    }
+                    string filePath = System.IO.Path.Combine(recipesFolderPath, name + ".json");
+                    string json = File.ReadAllText(filePath);
+                    Recipe return_recipe = new Recipe();
+                    return_recipe.Name = name;
+                    return_recipe.Commands = JsonSerializer.Deserialize<List<fbcommand>>(json);
+                    return return_recipe;
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to load recipes: {ex.Message}");
-                }
-                return new List<fbrecipe>();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load recipes: {ex.Message}");
             }
             return null;
         }
 
-        public static void SaveRecipes(List<fbrecipe> recipes, int option)
+        public static bool UpdateRecipe(Recipe recipe)
         {
-            //option= 1: move register; 2: shake register
-            if (option == 1)
+            try
             {
-                try
-                {
-                    string json = JsonSerializer.Serialize(recipes);
-                    File.WriteAllText(filePath_1, json);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to save recipes: {ex.Message}");
-                }
+                string json = JsonSerializer.Serialize(recipe.Commands);
+                string filePath = System.IO.Path.Combine(recipesFolderPath, recipe.Name + ".json");
+                File.WriteAllText(filePath, json);
+                return true;
             }
-            else if (option == 2)
+            catch (Exception ex)
             {
-                try
-                {
-                    string json = JsonSerializer.Serialize(recipes);
-                    File.WriteAllText(filePath_2, json);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to save recipes: {ex.Message}");
-                }
+                MessageBox.Show($"Failed to save recipes: {ex.Message}");
+                return false;
             }
         }
     }

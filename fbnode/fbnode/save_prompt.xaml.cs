@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Authentication.ExtendedProtection;
 using System.Text;
@@ -24,149 +25,80 @@ namespace fbnode
     public partial class save_prompt : Window
     {
         public string recipe_name {  get;  private set; }
-        int response;
         int scenario = 0;
         private RecipesViewModel _viewModel;
-        fbrecipe? selected_recipe;
+        Recipe? selected_recipe;
         public save_prompt()
         {
             InitializeComponent();
         }
-
-        public int save_reg(fbrecipe recipe, int option)
+        public bool FileExists(string name)
         {
-            //option = 0: user saving attempt; 1: overwrite; 2: delete
-            //return = 0: succesfully saved; 1: name already exists; 2: succesfully deleted
-
-            if (option == 0 || option == 1 || option == 2)
-            {
-                if (recipe.type == 0)
-                {
-                    for (int i = 0; i < recipe_reg_move.Count; i++)
-                    {
-                        if (recipe_reg_move[i].name == recipe.name)
-                        {
-                            if (option == 0) return 1;
-                            else if (option == 1)
-                            {
-                                recipe_reg_move[i] = recipe;
-
-                                RecipeManager.SaveRecipes(recipe_reg_move, 1);
-                                return 0;
-                            }
-                            else if (option == 2)
-                            {
-                                recipe_reg_move.RemoveAt(i);
-                                RecipeManager.SaveRecipes(recipe_reg_move, 1);
-                                return 2;
-                            }
-                        }
-                    }
-                    recipe_reg_move.Add(recipe);
-
-                    RecipeManager.SaveRecipes(recipe_reg_move, 1);
-                    return 0;
-                }
-                else if (recipe.type == 1)
-                {
-                    for (int i = 0; i < recipe_reg_shake.Count; i++)
-                    {
-                        if (recipe_reg_shake[i].name == recipe.name)
-                        {
-                            if (option == 0) return 1;
-                            else if (option == 1)
-                            {
-                                recipe_reg_shake[i] = recipe;
-
-                                RecipeManager.SaveRecipes(recipe_reg_shake, 2);
-                                return 0;
-                            }
-                            else if (option == 2)
-                            {
-                                recipe_reg_shake.RemoveAt(i);
-                                RecipeManager.SaveRecipes(recipe_reg_shake, 2);
-                                return 2;
-                            }
-                        }
-                    }
-                    recipe_reg_shake.Add(recipe);
-
-                    RecipeManager.SaveRecipes(recipe_reg_shake, 2);
-                    return 0;
-                }
-                else return -1;
-            }
-            else return -1;
+            string filePath = System.IO.Path.Combine(recipesFolderPath, name + ".json");
+            if (File.Exists(filePath)) return true;
+            else return false;
         }
 
-        public void delete(fbrecipe recipe)
+        public void delete(Recipe recipe)
         {
-            prompt_title.Text = "Are you sure you want to delete the recipe " + recipe.name + " ?";
+            prompt_title.Text = "Are you sure you want to delete the recipe " + recipe.Name + " ?";
             save_prompt_textbox.Visibility = Visibility.Collapsed;
             Button1.Visibility = Visibility.Visible;
             Button2.Visibility = Visibility.Visible;
             Button3.Visibility = Visibility.Collapsed;
-            save_prompt_textbox.Text = recipe.name;
+            Button1.IsEnabled = true;
+            Button1.Opacity = 1;
             Button1.Content = "Yes";
             selected_recipe = recipe;
             scenario = 2;
+        }
+        public void create_json(string name)
+        {
+            string filePath = System.IO.Path.Combine(recipesFolderPath, name + ".json");
+            Recipe newRecipe = new Recipe { Name = name };
+            string json = System.Text.Json.JsonSerializer.Serialize(newRecipe.Commands);
+            File.WriteAllText(filePath, json);
+        }
+        public void delete_json(string name)
+        {
+            string filePath = System.IO.Path.Combine(recipesFolderPath, name + ".json");
+            File.Delete(filePath);
         }
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
             if(scenario == 0)
             {
-                current_recipe.name = save_prompt_textbox.Text;
-                response = save_reg(current_recipe, 0);
-                if (response == 0)
+                bool response = FileExists(save_prompt_textbox.Text);
+                if (!response)
                 {
+                    create_json(save_prompt_textbox.Text);
+                    RecipeManager.LoadReg();
                     prompt_title.Text = "Recipe succesfully saved";
                     save_prompt_textbox.Visibility = Visibility.Collapsed;
                     Button1.Visibility = Visibility.Collapsed;
                     Button2.Visibility = Visibility.Collapsed;
                     Button3.Visibility = Visibility.Visible;
                 }
-                else if (response == 1)
+                else if (response)
                 {
                     prompt_title.Text = "Recipe already exists";
-                    save_prompt_textbox.Visibility = Visibility.Collapsed;
-                    Button1.Content = "Overwrite";
-                    Button3.Visibility = Visibility.Collapsed;
-                    scenario = 1;
-                }
-                else if (response == -1)
-                {
-                    save_prompt_textbox.Visibility = Visibility.Collapsed;
                     Button1.Visibility = Visibility.Collapsed;
                     Button2.Visibility = Visibility.Collapsed;
                     Button3.Visibility = Visibility.Visible;
-                    prompt_title.Text = "Error.";
+                    save_prompt_textbox.Visibility = Visibility.Collapsed;
+                    scenario = 3;
                 }
-            }
-            else if (scenario == 1)
-            {
-                response = save_reg(current_recipe, 1);
-                save_prompt_textbox.Visibility = Visibility.Collapsed;
-                Button1.Visibility = Visibility.Collapsed;
-                Button2.Visibility = Visibility.Collapsed;
-                Button3.Visibility = Visibility.Visible;
-
-                if (response != -1) prompt_title.Text = "Recipe succesfully saved";
-                else if (response == -1) prompt_title.Text = "Error";
             }
             else if (scenario == 2)
             {
-                save_reg(selected_recipe.Value, 2);
+                delete_json(selected_recipe.Name);
+                selected_recipe = null;
                 prompt_title.Text = "Recipe deleted";
                 Button1.Visibility = Visibility.Collapsed;
                 Button2.Visibility = Visibility.Collapsed;
                 Button3.Visibility = Visibility.Visible;
-                if (selected_recipe.Value.type == 0) UserControl1.selectedrecipeMove = null;
-                if (selected_recipe.Value.type == 1) UserControl1.selectedrecipeShake = null;
-                selected_recipe = null;
-
-                
             }
-            ViewModel.LoadRecipes();
+            //ViewModel.LoadRecipes();
         }
 
         private void Button2_Click(object sender, RoutedEventArgs e)
@@ -184,17 +116,21 @@ namespace fbnode
 
         private void Button3_Click(object sender, RoutedEventArgs e)
         {
-            save_Prompt.Hide();
-            reset();
+            if (scenario == 2)
+            {
+                save_Prompt.Hide();
+                reset();
+            }
+            else if(scenario == 3) reset();
         }
         
-        private void reset()
+        public void reset()
         {
+            scenario = 0;
             prompt_title.Text = "Insert name of the recipe here:";
             save_prompt_textbox.Text = "Type name here";
             save_prompt_textbox.Foreground = Brushes.Gray;
             save_prompt_textbox.FontStyle = FontStyles.Italic;
-            scenario = 0;
             save_prompt_textbox.Visibility = Visibility.Visible;
             Button1.Content = "Save";
             Button1.Visibility = Visibility.Visible;

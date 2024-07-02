@@ -31,9 +31,16 @@ namespace fbnode
             InitializeComponent();
 
             ViewModel = new RecipesViewModel();
-            DataContext = ViewModel;
-            recipe_reg_move = RecipeManager.LoadRecipes(1);
-            recipe_reg_shake = RecipeManager.LoadRecipes(2);
+            DataContext = this;
+            RecipesFolderExists();
+            RecipeManager.LoadReg();
+            UpdateCombobox();
+            recipe_combobox.Items.Clear();
+
+            recipe_combobox.ItemsSource = recipe_reg;
+
+            //recipe_reg_shake = RecipeManager.LoadRecipes(2);
+
         }
 
         public void InitializeNode(TMcraftNodeAPI tmnodeapi)
@@ -44,6 +51,14 @@ namespace fbnode
         public void InscribeScript(ScriptWriteProvider scriptWriter)
         {
 
+        }
+
+        private void RecipesFolderExists()
+        {
+            if (!Directory.Exists(recipesFolderPath))
+            {
+                Directory.CreateDirectory(recipesFolderPath);
+            }
         }
 
         string _TMscript = string.Empty;
@@ -62,21 +77,32 @@ namespace fbnode
         int airblowtime = 200;
         bool backlighton = true;
         int[] errors = { 3, 5, 6, 7 };
-        static public fbrecipe current_recipe = new fbrecipe();
-        static public List<fbrecipe> recipe_reg_move;
-        static public List<fbrecipe> recipe_reg_shake;
+        static public fbcommand current_command = new fbcommand();
+        static public Recipe current_recipe;
+        static public List<Recipe> recipe_reg = new List<Recipe>();
         static public save_prompt save_Prompt = new save_prompt();
         static public int mode = 0; //mode= 0: move tab; 1: shake tab
-        static public fbrecipe? selectedrecipeMove;
-        static public fbrecipe? selectedrecipeShake;
+        static public fbcommand? selected_command;
         static public List<VariableInfo>? global_variables;
         static public IPAddress ipaddress = IPAddress.Parse("10.10.10.141");
         static public int port = 7776;
 
-        public struct fbrecipe
+        public static string recipesFolderPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "recipes");
+
+        public class Recipe
+        {
+            public string Name { get; set; }
+            public List<fbcommand> Commands { get; set; }
+
+            public Recipe()
+            {
+                Commands = new List<fbcommand>();
+            }
+        }
+        public struct fbcommand
         {
             //type = 0: move; 1:shake
-            public string name { get; set; }
+            public int seq_n { get; set; }
             public int type { get; set; }
             public int movecount { get; set; }
             public int angle { get; set; }
@@ -160,31 +186,25 @@ namespace fbnode
             set { SetValue(ip4Property, value); }
         }
 
-        private fbrecipe getparam()
+        private fbcommand getparam()
         {
-            fbrecipe recipe = new fbrecipe();
-
-            recipe.angle = (int)angleSlider.Value;
-            recipe.speed = (int)speedSlider.Value;
-            recipe.acc = (int)accSlider.Value;
-            recipe.dec = (int)decSlider.Value;
+            fbcommand command = new fbcommand();
+            command.seq_n = current_recipe.Commands.Count;
+            command.angle = (int)angleSlider.Value;
+            command.speed = (int)speedSlider.Value;
+            command.acc = (int)accSlider.Value;
+            command.dec = (int)decSlider.Value;
             if (mode == 0)
             {
-                recipe.type = 0;
-                recipe.movecount = 1;
-                recipe.angleaux = 0;
+                command.type = 0;
+                command.movecount = (int)countSlider.Value;
+                command.angleaux = (int)angleccwSlider.Value;
             }
-            else if (mode == 1)
-            {
-                recipe.type = 1;
-                recipe.movecount = (int)countSlider.Value;
-                recipe.angleaux = (int)angleccwSlider.Value;
-            }
-            return recipe;
+            return command;
         }
         private void save_button_Click(object sender, RoutedEventArgs e)
         {
-            current_recipe = getparam();
+            current_command = getparam();
             save_Prompt.Show();
             
             ////////////// CREATE FLEXIBOWL VARIABLES IN TMFLOW /////////////////
@@ -219,40 +239,11 @@ namespace fbnode
 
             }
         }
-        private void Light_Checked(object sender, RoutedEventArgs e)
-        {
-            script_write_1 = "1";
-            NodeUI.IOProvider.SetCameraLight(true);
-        }
-        private void Light_unChecked(object sender, RoutedEventArgs e)
-        {
-            script_write_1 = "0";
-            NodeUI.IOProvider.SetCameraLight(false);
-        }
-
-        private void DO1_Checked(object sender, RoutedEventArgs e)
-        {
-            script_write_2 = "1";
-            NodeUI.IOProvider.WriteDigitOutput(IO_TYPE.CONTROL_BOX, 0, 0, true);
-        }
-
-        private void DO1_unChecked(object sender, RoutedEventArgs e)
-        {
-            script_write_2 = "0";
-            NodeUI.IOProvider.WriteDigitOutput(IO_TYPE.CONTROL_BOX, 0, 0, false);
-        }
 
         private void Test_Click(object sender, RoutedEventArgs e)
         {
             byte[] MySendByte = { 0, 0, 0 };
             if(mode == 0)
-            {
-                if (errors.Contains(Sendcmd("RXV" + SharedSpeed * 3))) return;
-                if (errors.Contains(Sendcmd("RXA" + SharedAcc * 3))) return;
-                if (errors.Contains(Sendcmd("RXB" + SharedDec * 3))) return;
-                if (errors.Contains(Sendcmd("FL" + SharedAngle * 3))) return;
-            }
-            else if(mode == 1)
             {
 
                 if (errors.Contains(Sendcmd("RXV" + SharedSpeed * 3))) return;
@@ -470,56 +461,35 @@ namespace fbnode
         {
             if (e.AddedItems.Count > 0)
             {
-                if (mode == 0) selectedrecipeMove = (fbrecipe)e.AddedItems[0];
-                else if (mode == 1) selectedrecipeShake = (fbrecipe)e.AddedItems[0];
-                Load_click(sender, e);
+                selected_command = (fbcommand)e.AddedItems[0];
+                Load_click();
             }
         }
 
-        private void Load_click(object sender, RoutedEventArgs e)
+        private void Load_click()
         {
             save_to_current_button.IsEnabled = true;
             save_to_current_button.Opacity = 1;
-            if (mode == 0 && selectedrecipeMove != null)
-            {
-                current_recipe.name = selectedrecipeMove.Value.name;
-                current_textblock.Text = selectedrecipeMove.Value.name;
-                current_textblock.Visibility = Visibility.Visible;
-                current_x_button.Visibility = Visibility.Visible;
+            current_command.seq_n = selected_command.Value.seq_n;
+            current_textblock.Text = selected_command.Value.seq_n.ToString();
+            current_textblock.Visibility = Visibility.Visible;
+            current_x_button.Visibility = Visibility.Visible;
 
-                SharedAngle = selectedrecipeMove.Value.angle;
-                SharedSpeed = selectedrecipeMove.Value.speed;
-                SharedAcc = selectedrecipeMove.Value.acc;
-                SharedDec = selectedrecipeMove.Value.dec;
-            }
-            else if (mode == 1 && selectedrecipeShake != null)
-            {
-                current_recipe.name = selectedrecipeShake.Value.name;
-                current_textblock_2.Text = selectedrecipeShake.Value.name;
-                current_textblock_2.Visibility = Visibility.Visible;
-                current_x_button_2.Visibility = Visibility.Visible;
-
-                SharedAngle = selectedrecipeShake.Value.angle;
-                SharedSpeed = selectedrecipeShake.Value.speed;
-                SharedAcc = selectedrecipeShake.Value.acc;
-                SharedDec = selectedrecipeShake.Value.dec;
-                SharedCCWAngle = selectedrecipeShake.Value.angleaux;
-                SharedCount = selectedrecipeShake.Value.movecount;
-            }
-            else MessageBox.Show("no recipe selected");
+            SharedAngle = selected_command.Value.angle;
+            SharedSpeed = selected_command.Value.speed;
+            SharedAcc = selected_command.Value.acc;
+            SharedDec = selected_command.Value.dec;
+            SharedCCWAngle = selected_command.Value.angleaux;
+            SharedCount = selected_command.Value.movecount;
         }
 
         private void Delete_click(object sender, RoutedEventArgs e)
         {
-            if (mode == 0 && selectedrecipeMove != null)
+            if (current_recipe != null)
             {
                 save_Prompt.Show();
-                save_Prompt.delete(selectedrecipeMove.Value);
-            }
-            else if (mode == 1 && selectedrecipeShake != null)
-            {
-                save_Prompt.Show();
-                save_Prompt.delete(selectedrecipeShake.Value);
+                save_Prompt.delete(current_recipe);
+                //save_Prompt.delete(selected_command.Value);
             }
             else MessageBox.Show("no recipe selected");
         }
@@ -586,69 +556,19 @@ namespace fbnode
             ip4 = 141;
 
         }
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SharedAcc = 0;
-            SharedDec = 0;
-            SharedSpeed = 0;
-            SharedAngle = 0;
-            SharedCCWAngle = 0;
-            SharedCount = 0;
-
-            string tabItem = ((sender as TabControl).SelectedItem as TabItem).Header as string;
-
-            switch (tabItem)
-            {
-                case "MOVE":
-                    mode = 0;
-                    current_x_hide();
-                    current_x_button.Visibility = Visibility.Collapsed;
-                    angleccwtextblock.Visibility = Visibility.Collapsed;
-                    angleccwSlider.Visibility = Visibility.Collapsed;
-                    angleccwtextbox.Visibility = Visibility.Collapsed;
-                    counttextblock.Visibility = Visibility.Collapsed;
-                    countSlider.Visibility = Visibility.Collapsed;
-                    counttextbox.Visibility = Visibility.Collapsed;
-                    RecipeListBoxmove.Visibility = Visibility.Visible;
-                    RecipeListBoxshake.Visibility = Visibility.Collapsed;
-                    recipelisttextblock_move.Visibility = Visibility.Visible;
-                    recipelisttextblock_shake.Visibility = Visibility.Collapsed;
-                    break;
-
-                case "SHAKE":
-                    mode = 1;
-                    current_x_button_2.Visibility = Visibility.Collapsed;
-                    current_x_hide_2();
-                    angleccwtextblock.Visibility = Visibility.Visible;
-                    angleccwSlider.Visibility = Visibility.Visible;
-                    angleccwtextbox.Visibility = Visibility.Visible;
-                    counttextblock.Visibility = Visibility.Visible;
-                    countSlider.Visibility = Visibility.Visible;
-                    counttextbox.Visibility = Visibility.Visible;
-                    RecipeListBoxmove.Visibility = Visibility.Collapsed;
-                    RecipeListBoxshake.Visibility = Visibility.Visible;
-                    recipelisttextblock_move.Visibility= Visibility.Collapsed;
-                    recipelisttextblock_shake.Visibility= Visibility.Visible;
-                    break;
-
-                default:
-                    return;
-            }
-        }
 
         private void save_to_current_Click(object sender, RoutedEventArgs e)
         {
-            current_recipe = getparam();
-            if (mode == 0) current_recipe.name = current_textblock.Text;
-            else if (mode == 1) current_recipe.name = current_textblock_2.Text;
-            save_Prompt.save_reg(current_recipe, 1);
-            ViewModel.LoadRecipes();
+            current_command = getparam();
+            current_command.seq_n = int.Parse(current_textblock.Text);
+            //save_Prompt.save_reg(current_command, 1);
+            //ViewModel.LoadRecipes();
         }
 
         public void current_x_Click(object sender, RoutedEventArgs e)
         {
             current_x_hide();
-            selectedrecipeMove = null;
+            selected_command = null;
         }
         public void current_x_hide()
         {
@@ -658,21 +578,69 @@ namespace fbnode
             save_to_current_button.IsEnabled = false;
             save_to_current_button.Opacity = 0.5;
         }
-
-        public void current_x_Click_2(object sender, RoutedEventArgs e)
+        public void new_recipe_click(object sender, RoutedEventArgs e)
         {
-            current_x_hide_2();
-            selectedrecipeShake = null;
-        }
-        public void current_x_hide_2()
-        {
-            current_textblock_2.Visibility = Visibility.Collapsed;
-            current_x_button_2.Visibility = Visibility.Collapsed;
-            current_textblock_2.Text = "";
-            save_to_current_button.IsEnabled = false;
-            save_to_current_button.Opacity = 0.5;
+            save_Prompt.Show();
+            save_Prompt.reset();
         }
 
+        private void add_click(object sender, RoutedEventArgs e)
+        {
+            current_recipe.Commands.Add(getparam());
+            if (RecipeManager.UpdateRecipe(current_recipe))
+            {
+                RecipeManager.LoadReg();
+                update_listbox();
+
+                command_listbox.Items.Refresh();
+            }
+        }
+        public void UpdateCombobox()
+        {
+            recipe_combobox.Items.Clear();
+            foreach (var recipe in recipe_reg)
+            {
+                recipe_combobox.Items.Add(recipe.Name);
+            }
+        }
+        private void recipe_combobox_DropDownOpened(object sender, EventArgs e)
+        {
+            RecipeManager.LoadReg();
+            UpdateCombobox();
+        }
+        private void combobox_selectionchanged(object sender, RoutedEventArgs e)
+        {
+            current_recipe = recipe_combobox.SelectedItem as Recipe;
+            update_listbox();
+        }
+        private void update_listbox()
+        {
+            if (current_recipe != null)
+            {
+                command_listbox.ItemsSource = current_recipe.Commands;
+            }
+            else MessageBox.Show(".");
+        }
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            command_listbox.Items.Refresh();
+            //recipe_combobox.ItemsSource = recipe_reg;
+        }
+
+        private void remove_click(object sender, RoutedEventArgs e)
+        {
+            fbcommand f_command = current_recipe.Commands.Find(x => x.seq_n == current_command.seq_n);
+            var temp = new fbcommand();
+            for (int i = f_command.seq_n + 1; i < current_recipe.Commands.Count; i++)
+            {
+                temp = current_recipe.Commands[i];
+                temp.seq_n--;
+                current_recipe.Commands[i] = temp;
+            }
+            current_recipe.Commands.RemoveAt(f_command.seq_n);
+            RecipeManager.UpdateRecipe(current_recipe);
+            command_listbox.Items.Refresh();
+        }
     }
 
 }

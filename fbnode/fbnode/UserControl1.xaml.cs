@@ -16,9 +16,27 @@ using static fbnode.UserControl1;
 using System.IO;
 using System.Text.Json;
 using System.Net.NetworkInformation;
+using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace fbnode
 {
+    public class CommandTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate StandardTemplate { get; set; }
+        public DataTemplate MixTemplate { get; set; }
+        public DataTemplate WaitStandardTemplate { get; set; }
+        public DataTemplate WaitMixTemplate { get; set; }
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            var command = (fbcommand)item;
+            if (command.type == 0) return StandardTemplate;
+            else if (command.type == 1) return WaitStandardTemplate;
+            else if (command.type == 2) return MixTemplate;
+            else return WaitMixTemplate;
+        }
+    }
     /// <summary>
     /// Interaction logic for UserControl1.xaml
     /// </summary>
@@ -39,6 +57,8 @@ namespace fbnode
 
             recipe_combobox.ItemsSource = recipe_reg;
 
+            IpLoad();
+
             //recipe_reg_shake = RecipeManager.LoadRecipes(2);
 
         }
@@ -58,6 +78,37 @@ namespace fbnode
             if (!Directory.Exists(recipesFolderPath))
             {
                 Directory.CreateDirectory(recipesFolderPath);
+            }
+        }
+        private void IpLoad()
+        {
+            string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ip_address.txt");
+            if (File.Exists(filePath))
+            {
+                string ip_address = File.ReadAllText(filePath).Trim();
+                string[] ip_parts = ip_address.Split('.');
+                ip1 = int.Parse(ip_parts[0]);
+                ip2 = int.Parse(ip_parts[1]);
+                ip3 = int.Parse(ip_parts[2]);
+                ip4 = int.Parse(ip_parts[3]);
+                ip1_textbox.Text = ip1.ToString();
+                ip2_textbox.Text = ip2.ToString();
+                ip3_textbox.Text = ip3.ToString();
+                ip4_textbox.Text = ip4.ToString();
+
+            }
+            else
+            {
+                ip1 = 0;
+                ip2 = 0;
+                ip3 = 0;
+                ip4 = 0;
+                ip1_textbox.Text = "0";
+                ip2_textbox.Text = "0";
+                ip3_textbox.Text = "0";
+                ip4_textbox.Text = "0";
+
+                File.WriteAllText(filePath, "0.0.0.0");
             }
         }
 
@@ -101,7 +152,7 @@ namespace fbnode
         }
         public struct fbcommand
         {
-            //type = 0: move; 1:shake
+            //type = 0: standard; 1: wait-standard; 2: mix; 3: wait-mix
             public int seq_n { get; set; }
             public int type { get; set; }
             public int movecount { get; set; }
@@ -110,6 +161,10 @@ namespace fbnode
             public int speed { get; set; }
             public int acc { get; set; }
             public int dec { get; set; }
+            public int wait_time { get; set; }
+            public int flip_count { get; set; }
+            public int flip_time { get; set; }
+            public int blow_time { get; set; }
         }
         //private void LoadRecipes()
         //{
@@ -160,31 +215,35 @@ namespace fbnode
             get { return (int)GetValue(SharedCountProperty); }
             set { SetValue(SharedCountProperty, value); }
         }
+        public static readonly DependencyProperty SharedWaitProperty = DependencyProperty.Register("SharedWait", typeof(int), typeof(UserControl1), new PropertyMetadata(0));
+        public int SharedWait
+        {
+            get { return (int)GetValue(SharedWaitProperty); }
+            set { SetValue(SharedWaitProperty, value); }
+        }
+        public static readonly DependencyProperty SharedFlipProperty = DependencyProperty.Register("SharedFlip", typeof(int), typeof(UserControl1), new PropertyMetadata(0));
+        public int SharedFlip
+        {
+            get { return (int)GetValue(SharedFlipProperty); }
+            set { SetValue(SharedFlipProperty, value); }
+        }
+        public static readonly DependencyProperty SharedFlipcountProperty = DependencyProperty.Register("SharedBlow", typeof(int), typeof(UserControl1), new PropertyMetadata(0));
+        public int SharedFlipcount
+        {
+            get { return (int)GetValue(SharedFlipcountProperty); }
+            set { SetValue(SharedFlipcountProperty, value); }
+        }
+        public static readonly DependencyProperty SharedBlowProperty = DependencyProperty.Register("SharedFlipcount", typeof(int), typeof(UserControl1), new PropertyMetadata(0));
+        public int SharedBlow
+        {
+            get { return (int)GetValue(SharedBlowProperty); }
+            set { SetValue(SharedBlowProperty, value); }
+        }
 
-        public static readonly DependencyProperty ip1Property = DependencyProperty.Register("ip1", typeof(int), typeof(UserControl1), new PropertyMetadata(0, OnIp1PropertyChanged));
-        public int ip1
-        {
-            get { return (int)GetValue(ip1Property); }
-            set { SetValue(ip1Property, value); }
-        }
-        public static readonly DependencyProperty ip2Property = DependencyProperty.Register("ip2", typeof(int), typeof(UserControl1), new PropertyMetadata(0, OnIp2PropertyChanged));
-        public int ip2
-        {
-            get { return (int)GetValue(ip2Property); }
-            set { SetValue(ip2Property, value); }
-        }
-        public static readonly DependencyProperty ip3Property = DependencyProperty.Register("ip3", typeof(int), typeof(UserControl1), new PropertyMetadata(0, OnIp3PropertyChanged));
-        public int ip3
-        {
-            get { return (int)GetValue(ip3Property); }
-            set { SetValue(ip3Property, value); }
-        }
-        public static readonly DependencyProperty ip4Property = DependencyProperty.Register("ip4", typeof(int), typeof(UserControl1), new PropertyMetadata(0, OnIp4PropertyChanged));
-        public int ip4
-        {
-            get { return (int)GetValue(ip4Property); }
-            set { SetValue(ip4Property, value); }
-        }
+        public int ip1;
+        public int ip2;
+        public int ip3;
+        public int ip4;
 
         private fbcommand getparam()
         {
@@ -194,14 +253,19 @@ namespace fbnode
             command.speed = (int)speedSlider.Value;
             command.acc = (int)accSlider.Value;
             command.dec = (int)decSlider.Value;
-            if (mode == 0)
-            {
-                command.type = 0;
-                command.movecount = (int)countSlider.Value;
-                command.angleaux = (int)angleccwSlider.Value;
-            }
+            command.movecount = (int)countSlider.Value;
+            command.wait_time = (int)waitSlider.Value;
+            command.flip_count = (int)flipcountSlider.Value;
+            command.flip_time = (int)flipSlider.Value;
+            command.blow_time = (int)blowSlider.Value;
+            if ((int)flipSlider.Value == 0 && (int)blowSlider.Value == 0 && (int)waitSlider.Value == 0) command.type = 0;
+            else if ((int)flipSlider.Value == 0 && (int)blowSlider.Value == 0 && (int)waitSlider.Value != 0) command.type = 1;
+            else if ((int)waitSlider.Value == 0) command.type = 2;
+            else if ((int)waitSlider.Value != 0) command.type = 3;
+            if ((int)countSlider.Value > 1) command.angleaux = 0;
+            else command.angleaux = (int)angleccwSlider.Value;
             return command;
-        }
+    }
         private void save_button_Click(object sender, RoutedEventArgs e)
         {
             current_command = getparam();
@@ -233,13 +297,12 @@ namespace fbnode
             {
                 string str_config1 = string.Empty;
                 NodeUI.DataStorageProvider.GetData("config1", out str_config1);
-                TM_variables_synch();
+                //TM_variables_synch();
                 //Text_Title.Text = str_config1;
 
 
             }
         }
-
         private void Test_Click(object sender, RoutedEventArgs e)
         {
             byte[] MySendByte = { 0, 0, 0 };
@@ -372,46 +435,6 @@ namespace fbnode
 
         public void TM_variables_synch()
         {
-            NodeUI.VariableProvider.GetGlobalVariableList(ref global_variables);
-            int parsedValue;
-            if(global_variables != null)
-            {
-
-                if (NodeUI.VariableProvider.IsGlobalVariableExist("g_ip1"))
-                {
-                    int.TryParse(global_variables.FirstOrDefault(v => v.Name == "g_ip1").value, out parsedValue);
-                    ip1 = parsedValue;
-                }
-                else
-                {
-                    NodeUI.VariableProvider.CreateGlobalVariable("ip1", VariableType.Integer, "0");
-                }
-                if (NodeUI.VariableProvider.IsGlobalVariableExist("g_ip2"))
-                {
-                    int.TryParse(global_variables.FirstOrDefault(v => v.Name == "g_ip2").value, out parsedValue);
-                    ip2 = parsedValue;
-                }
-                else NodeUI.VariableProvider.CreateGlobalVariable("ip2", VariableType.Integer, "0");
-                if (NodeUI.VariableProvider.IsGlobalVariableExist("g_ip3"))
-                {
-                    int.TryParse(global_variables.FirstOrDefault(v => v.Name == "g_ip3").value, out parsedValue);
-                    ip3 = parsedValue;
-                }
-                else NodeUI.VariableProvider.CreateGlobalVariable("ip3", VariableType.Integer, "0");
-                if (NodeUI.VariableProvider.IsGlobalVariableExist("g_ip4"))
-                {
-                    int.TryParse(global_variables.FirstOrDefault(v => v.Name == "g_ip4").value, out parsedValue);
-                    ip4 = parsedValue;
-                }
-                else NodeUI.VariableProvider.CreateGlobalVariable("ip4", VariableType.Integer, "0");
-            }
-            else
-            {
-                NodeUI.VariableProvider.CreateGlobalVariable("ip1", VariableType.Integer, "0");
-                NodeUI.VariableProvider.CreateGlobalVariable("ip2", VariableType.Integer, "0");
-                NodeUI.VariableProvider.CreateGlobalVariable("ip3", VariableType.Integer, "0");
-                NodeUI.VariableProvider.CreateGlobalVariable("ip4", VariableType.Integer, "0");
-            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -481,6 +504,10 @@ namespace fbnode
             SharedDec = selected_command.Value.dec;
             SharedCCWAngle = selected_command.Value.angleaux;
             SharedCount = selected_command.Value.movecount;
+            SharedWait = selected_command.Value.wait_time;
+            SharedFlipcount = selected_command.Value.flip_count;
+            SharedFlip = selected_command.Value.flip_time;
+            SharedBlow = selected_command.Value.blow_time;
         }
 
         private void Delete_click(object sender, RoutedEventArgs e)
@@ -493,68 +520,23 @@ namespace fbnode
             }
             else MessageBox.Show("no recipe selected");
         }
-        private static void OnIp1PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = d as UserControl1;
-            if (control != null)
-            {
-                string[] a = { "g_ip1", e.NewValue.ToString() };
-                List<string[]> b = new List<string[]>(1); // Correctly initialize the list
-                b.Add(a); // Add the array to the list
-                if (NodeUI != null) NodeUI.VariableProvider.ChangeGlobalVariableValue(b);
-            }
-        }
-        private static void OnIp2PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = d as UserControl1;
-            if (control != null)
-            {
-                string[] a = { "g_ip2", e.NewValue.ToString() };
-                List<string[]> b = new List<string[]>(1); // Correctly initialize the list
-                b.Add(a); // Add the array to the list
-                if (NodeUI != null) NodeUI.VariableProvider.ChangeGlobalVariableValue(b);
-            }
-        }
-        private static void OnIp3PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = d as UserControl1;
-            if (control != null)
-            {
-                string[] a = { "g_ip3", e.NewValue.ToString() };
-                List<string[]> b = new List<string[]>(1); // Correctly initialize the list
-                b.Add(a); // Add the array to the list
-                if (NodeUI != null) NodeUI.VariableProvider.ChangeGlobalVariableValue(b);
-            }
-        }
-        private static void OnIp4PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = d as UserControl1;
-            if (control != null)
-            {
-                string[] a = { "g_ip4", e.NewValue.ToString() };
-                List<string[]> b = new List<string[]>(1); // Correctly initialize the list
-                b.Add(a); // Add the array to the list
-                if (NodeUI != null) NodeUI.VariableProvider.ChangeGlobalVariableValue(b);
-            }
-        }
 
         private void ping_click(object sender, RoutedEventArgs e)
         {
+            string ip = ip1_textbox.Text+"."+ip2_textbox.Text+"."+ip3_textbox.Text+"."+ip4_textbox.Text;
             Ping pingSender = new Ping();
-            IPAddress ipAddress = IPAddress.Parse(ip1.ToString() + "." + ip2.ToString() + "." + ip3.ToString() + "." + ip4.ToString());
+            IPAddress ipAddress = IPAddress.Parse(ip);
+            try
+            {
+                PingReply reply = pingSender.Send(ipAddress);
 
-            PingReply reply = pingSender.Send(ipAddress);
-
-            if (reply.Status == IPStatus.Success) MessageBox.Show("Device found");
-            else MessageBox.Show("Device not found");
-        }
-        private void default_ip(object sender, RoutedEventArgs e)
-        {
-            ip1 = 10;
-            ip2 = 10;
-            ip3 = 10;
-            ip4 = 141;
-
+                if (reply.Status == IPStatus.Success) MessageBox.Show("Device found");
+                else MessageBox.Show("Device not found");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ping error.");
+            }
         }
 
         private void save_to_current_Click(object sender, RoutedEventArgs e)
@@ -621,11 +603,6 @@ namespace fbnode
             }
             else MessageBox.Show(".");
         }
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            command_listbox.Items.Refresh();
-            //recipe_combobox.ItemsSource = recipe_reg;
-        }
 
         private void remove_click(object sender, RoutedEventArgs e)
         {
@@ -640,6 +617,43 @@ namespace fbnode
             current_recipe.Commands.RemoveAt(f_command.seq_n);
             RecipeManager.UpdateRecipe(current_recipe);
             command_listbox.Items.Refresh();
+        }
+
+
+
+        private void edit_ip_click(object sender, RoutedEventArgs e)
+        {
+            ip1_textbox.IsEnabled = true;
+            ip1_textbox.Opacity = 1;
+            ip2_textbox.IsEnabled = true;
+            ip2_textbox.Opacity = 1;
+            ip3_textbox.IsEnabled = true;
+            ip3_textbox.Opacity = 1;
+            ip4_textbox.IsEnabled = true;
+            ip4_textbox.Opacity = 1;
+        }
+
+        private void save_ip_click(object sender, RoutedEventArgs e)
+        {
+            ip1 = int.Parse(ip1_textbox.Text);
+            ip2 = int.Parse(ip2_textbox.Text);
+            ip3 = int.Parse(ip3_textbox.Text);
+            ip4 = int.Parse(ip4_textbox.Text);
+            string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ip_address.txt");
+            File.WriteAllText(filePath, ip1_textbox.Text + "." + ip2_textbox.Text + "." + ip3_textbox.Text + "." + ip4_textbox.Text);
+            ip1_textbox.IsEnabled = false;
+            ip1_textbox.Opacity = 0.7;
+            ip2_textbox.IsEnabled = false;
+            ip2_textbox.Opacity = 0.7;
+            ip3_textbox.IsEnabled = false;
+            ip3_textbox.Opacity = 0.7;
+            ip4_textbox.IsEnabled = false;
+            ip4_textbox.Opacity = 0.7;
+        }
+
+        private void test_recipe_click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

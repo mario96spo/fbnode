@@ -22,8 +22,23 @@ namespace fbnode
     /// <summary>
     /// Logica di interazione per Window1.xaml
     /// </summary>
+    /// 
+    public class RecipeAddedEventArgs : EventArgs
+    {
+        public Recipe NewRecipe { get; }
+
+        public RecipeAddedEventArgs(Recipe newRecipe)
+        {
+            NewRecipe = newRecipe;
+        }
+    }
+    public class RecipeDeletedEventArgs : EventArgs
+    {
+    }
     public partial class save_prompt : Window
     {
+        public event EventHandler<RecipeAddedEventArgs> RecipeAdded;
+        public event EventHandler<RecipeDeletedEventArgs> RecipeDeleted;
         public string recipe_name {  get;  private set; }
         int scenario = 0;
         private RecipesViewModel _viewModel;
@@ -58,11 +73,15 @@ namespace fbnode
             Recipe newRecipe = new Recipe { Name = name };
             string json = System.Text.Json.JsonSerializer.Serialize(newRecipe.Commands);
             File.WriteAllText(filePath, json);
+            RecipeAdded?.Invoke(this, new RecipeAddedEventArgs(newRecipe));
         }
         public void delete_json(string name)
         {
             string filePath = System.IO.Path.Combine(recipesFolderPath, name + ".json");
             File.Delete(filePath);
+
+            RecipeManager.LoadReg();
+            RecipeDeleted?.Invoke(this, new RecipeDeletedEventArgs());
         }
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
@@ -116,7 +135,7 @@ namespace fbnode
 
         private void Button3_Click(object sender, RoutedEventArgs e)
         {
-            if (scenario == 2)
+            if (scenario == 0 || scenario == 2)
             {
                 save_Prompt.Hide();
                 reset();
